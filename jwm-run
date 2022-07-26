@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# TODO: Add --help
+
+# Default to Nothing: No Menu, no applications, only window-management and virtual desktops
+JWM_RUN_OPT_DEFAULTS="-f /dev/null"
+# ... but allow external overrides
+JWM_RUN_OPT=${JWM_RUN_OPT:-${JWM_RUN_OPT_DEFAULTS}}
+
+# Export the current display as a VNC server, in the background
+set -e  # exit on error
+jwm $JWM_RUN_OPT &
+JWM_PID=$!
+
+# Start the command and save its exit status.
+set +e
+"$@"
+RETVAL=$?
+set -e
+
+# Kill JWM now that the command has exited.
+kill $JWM_PID
+
+# Return the executed command's exit status.
+exit $RETVAL
